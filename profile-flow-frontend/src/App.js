@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import Vacantes from "./pages/Vacantes";
 import Register from "./pages/Register";
@@ -7,10 +7,19 @@ import PrivateRoute from "./components/PrivateRoute";
 import CrearVacante from "./pages/CrearVacante";
 import VacanteDetalle from "./pages/VacanteDetalle";
 import EditarVacante from "./pages/EditarVacante";
+import Navbar from "./components/Navbar";
+import MisLikes from "./pages/MisLikes";
+import Perfil from "./pages/Perfil";
+import MisVacantesPublicadas from "./pages/MisVacantesPublicadas"; // ✅ Import nuevo
 
-function App() {
+const AppContent = () => {
+  const location = useLocation();
+  const hideNavbarRoutes = ["/", "/register"];
+  const hideNavbar = hideNavbarRoutes.includes(location.pathname);
+
   return (
-    <Router>
+    <>
+      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -48,7 +57,39 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/mis-likes"
+          element={
+            <PrivateRoute>
+              <MisLikes />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <Perfil />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/vacantes-publicadas"
+          element={
+            <PrivateRoute>
+              <MisVacantesPublicadas />
+            </PrivateRoute>
+          }
+        />
       </Routes>
+    </>
+  );
+};
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

@@ -1,4 +1,3 @@
-// src/pages/VacanteDetalle.js
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,6 +8,8 @@ const VacanteDetalle = () => {
   const [vacante, setVacante] = useState(null);
   const [usuarioActual, setUsuarioActual] = useState(null);
   const [error, setError] = useState("");
+  const [yaDioLike, setYaDioLike] = useState(false);
+  const [idInteraccionLike, setIdInteraccionLike] = useState(null);
 
   useEffect(() => {
     const fetchVacanteYUsuario = async () => {
@@ -32,7 +33,42 @@ const VacanteDetalle = () => {
       }
     };
 
+    const registrarVistaYVerificarLike = async () => {
+      const token = localStorage.getItem("token");
+
+      // Registrar vista
+      try {
+        await axios.post(
+          `http://localhost:8000/api/interactions/`,
+          { job: id, interaction_type: "view" },
+          { headers: { Authorization: `Token ${token}` } }
+        );
+        console.log("Vista registrada");
+      } catch (err) {
+        if (err.response?.status === 400) {
+          console.log("Ya se había registrado esta vista.");
+        } else {
+          console.error("Error al registrar vista:", err);
+        }
+      }
+
+      // Verificar like
+      try {
+        const res = await axios.get(`http://localhost:8000/api/interactions/mis/?job=${id}&interaction_type=like`, {
+          headers: { Authorization: `Token ${token}` },
+        });
+
+        if (res.data.length > 0) {
+          setYaDioLike(true);
+          setIdInteraccionLike(res.data[0].id);
+        }
+      } catch (err) {
+        console.error("Error al verificar like:", err);
+      }
+    };
+
     fetchVacanteYUsuario();
+    registrarVistaYVerificarLike();
   }, [id]);
 
   const handleEliminar = async () => {
@@ -48,6 +84,32 @@ const VacanteDetalle = () => {
     } catch (error) {
       console.error("Error al eliminar la vacante:", error);
       setError("No se pudo eliminar la vacante.");
+    }
+  };
+
+  const handleLikeToggle = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      if (yaDioLike && idInteraccionLike) {
+        // Quitar like
+        await axios.delete(`http://localhost:8000/api/interactions/${idInteraccionLike}/`, {
+          headers: { Authorization: `Token ${token}` },
+        });
+        setYaDioLike(false);
+        setIdInteraccionLike(null);
+      } else {
+        // Dar like
+        const res = await axios.post(
+          `http://localhost:8000/api/interactions/`,
+          { job: id, interaction_type: "like" },
+          { headers: { Authorization: `Token ${token}` } }
+        );
+        setYaDioLike(true);
+        setIdInteraccionLike(res.data.id);
+      }
+    } catch (err) {
+      console.error("Error al alternar like:", err);
     }
   };
 
@@ -88,9 +150,26 @@ const VacanteDetalle = () => {
           </button>
         </>
       ) : (
-        <p style={{ marginTop: "1rem", color: "gray" }}>
-          Solo el reclutador que creó esta vacante puede editarla o eliminarla.
-        </p>
+        <>
+          <p style={{ marginTop: "1rem", color: "gray" }}>
+            Solo el reclutador que creó esta vacante puede editarla o eliminarla.
+          </p>
+
+          <button
+            onClick={handleLikeToggle}
+            style={{
+              marginTop: "2rem",
+              backgroundColor: yaDioLike ? "gray" : "hotpink",
+              color: "white",
+              border: "none",
+              padding: "0.5rem 1rem",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            {yaDioLike ? "Quitar like" : "Me gusta esta vacante"}
+          </button>
+        </>
       )}
     </div>
   );

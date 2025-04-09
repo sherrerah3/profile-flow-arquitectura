@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 function Vacantes() {
   const [vacantes, setVacantes] = useState([]);
   const [usuarioActual, setUsuarioActual] = useState(null);
+  const [cargando, setCargando] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,36 +22,32 @@ function Vacantes() {
           }),
         ]);
 
-        setVacantes(vacantesRes.data);
-        setUsuarioActual(userRes.data);
+        const usuario = userRes.data;
+        setUsuarioActual(usuario);
+
+        if (usuario.is_recruiter) {
+          // ❌ Redirigir si es reclutador
+          navigate("/vacantes-publicadas");
+        } else {
+          setVacantes(vacantesRes.data);
+        }
       } catch (error) {
         console.error("Error al obtener datos:", error);
+      } finally {
+        setCargando(false);
       }
     };
 
     fetchDatos();
-  }, []);
+  }, [navigate]);
+
+  if (cargando) {
+    return <p style={{ padding: "2rem" }}>Cargando vacantes...</p>;
+  }
 
   return (
     <div style={{ padding: "2rem" }}>
       <h1><strong>Vacantes Disponibles</strong></h1>
-
-      {usuarioActual?.is_recruiter && (
-        <button
-          onClick={() => navigate("/crear-vacante")}
-          style={{
-            marginBottom: "1.5rem",
-            padding: "0.5rem 1rem",
-            backgroundColor: "#4CAF50",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          Crear nueva vacante
-        </button>
-      )}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
         {vacantes.map((vacante) => (

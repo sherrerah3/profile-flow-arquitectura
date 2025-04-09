@@ -2,10 +2,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './Login.css'; // Usa el mismo css que el register
 
 const Login = () => {
-  console.log('Login component rendered'); // <-- DEBUG
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +17,7 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:8000/api/users/login/', {
         username,
-        password
+        password,
       });
 
       localStorage.setItem('token', response.data.token);
@@ -31,21 +30,34 @@ const Login = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Probando Login</h1> {/* <-- VISUAL DEBUG */}
-      <h2>Iniciar sesión</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Usuario:</label><br />
-          <input value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </div>
-        <div>
-          <label>Contraseña:</label><br />
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-        <button type="submit">Entrar</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
+    <div className="login-container">
+      <img src="/logo.png" alt="Logo Magneto Empleos" className="logo" />
+      <div className="login-box">
+        <h1 className="welcome-title">Bienvenido!</h1>
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className="login-input"
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="login-input"
+          />
+          <button type="submit" className="login-button">Iniciar Sesión</button>
+          <button type="button" className="register-button" onClick={() => navigate('/register')}>
+            Registrarse
+          </button>
+          {error && <p className="error-message">{error}</p>}
+        </form>
+      </div>
     </div>
   );
 };
