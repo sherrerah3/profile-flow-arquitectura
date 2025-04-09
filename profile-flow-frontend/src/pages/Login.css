@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Jockey+One&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Jockey One', sans-serif;
+  background-color: #ffffff;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+  }
+
+.logo {
+  width: 500px;
+  margin-right: 3rem;
+}
+
+.login-box {
+  background-color: #0FEB58;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 661px;
+  height: 590px;
+}
+
+.welcome-title {
+  color: white;
+  font-size: 96px;
+  margin-bottom: 1.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
+}
+
+.login-input {
+  width: 80%;
+  height: 30px;
+  padding: 0.7rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  font-size: 120%;
+  font-weight: bold;
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-button {
+  width: 55%;
+  padding: 1.2rem;
+  background-color: #30B95D;
+  color: rgb(255, 255, 255);
+  border: 2px solid black;
+  border-radius: 15px;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.login-button:hover {
+    background-color: #28a74f;
+    transform: scale(1.02);
+    transition: all 0.2s ease-in-out;
+  }
+
+.register-button {
+  width: 55%;
+  padding: 1.2rem;
+  background-color: white;
+  color: black;
+  border: 2px solid black;
+  border-radius: 15px;
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+  .register-button:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.02);
+    transition: all 0.2s ease-in-out;
+  }
+  
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
+}
