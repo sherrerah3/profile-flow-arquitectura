@@ -1,10 +1,9 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, RegisterSerializer
 
 User = get_user_model()
@@ -15,7 +14,7 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]  # ← permite el acceso sin autenticación
+    permission_classes = [AllowAny]
 
     def post(self, request):
         username = request.data.get("username")
@@ -27,9 +26,10 @@ class LoginView(APIView):
             return Response({"token": token.key, "user": UserSerializer(user).data})
         return Response({"error": "Credenciales incorrectas"}, status=status.HTTP_400_BAD_REQUEST)
 
-class CurrentUserView(APIView):
+# Vista que permite GET, PUT y PATCH para el usuario autenticado
+class CurrentUserView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+    def get_object(self):
+        return self.request.user
