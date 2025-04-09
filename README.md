@@ -113,7 +113,7 @@ npm install
 
 3. **Inicia el servidor de desarrollo**:
 ```bash
-npm run dev
+npm start
 ```
 
 ## 6. Uso y Ejemplos de Endpoints

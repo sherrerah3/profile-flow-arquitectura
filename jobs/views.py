@@ -1,9 +1,10 @@
 from rest_framework.views import APIView 
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import PermissionDenied
 from .models import Job
 from .serializers import JobSerializer
 
@@ -16,8 +17,6 @@ class JobListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        print("Usuario autenticado:", request.user)
-        print("¿Es reclutador?:", request.user.is_recruiter)
         if not request.user.is_recruiter:
             return Response(
                 {"error": "Solo los reclutadores pueden publicar vacantes."},
@@ -26,7 +25,6 @@ class JobListCreateView(APIView):
 
         serializer = JobSerializer(data=request.data)
         if serializer.is_valid():
-            # Asignamos recruiter directamente al guardar
             serializer.save(recruiter=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -37,13 +35,18 @@ class JobDetailView(APIView):
 
     def get(self, request, pk):
         job = get_object_or_404(Job, pk=pk)
+
+        # ✅ Permitir a usuarios normales ver cualquier vacante
+        # ✅ Permitir a reclutadores ver solo las suyas
+        if request.user.is_recruiter and job.recruiter != request.user:
+            raise PermissionDenied("Los reclutadores no pueden ver detalles de vacantes ajenas.")
+
         serializer = JobSerializer(job)
         return Response(serializer.data)
 
     def put(self, request, pk):
         job = get_object_or_404(Job, pk=pk)
 
-        # Solo el reclutador dueño puede editar
         if job.recruiter != request.user:
             return Response(
                 {"error": "No tienes permiso para editar esta vacante."},
@@ -59,7 +62,6 @@ class JobDetailView(APIView):
     def delete(self, request, pk):
         job = get_object_or_404(Job, pk=pk)
 
-        # Solo el reclutador dueño puede eliminar
         if job.recruiter != request.user:
             return Response(
                 {"error": "No tienes permiso para eliminar esta vacante."},
@@ -68,3 +70,13 @@ class JobDetailView(APIView):
 
         job.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class MisVacantesPublicadasView(ListAPIView):
+    serializer_class = JobSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_recruiter:
+            return Job.objects.filter(recruiter=user).order_by('-created_at')
+        return Job.objects.none()
