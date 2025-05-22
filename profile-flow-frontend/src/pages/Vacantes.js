@@ -70,8 +70,8 @@ function Vacantes() {
                 onClick={() => navigate(`/vacantes/${vacante.id}`)}
                 style={{
                   padding: "0.4rem 0.8rem",
-                  border: "1px solid #007bff",
-                  backgroundColor: "#007bff",
+                  border: "1px solid #777",
+                  backgroundColor: "#0fc55f",
                   color: "white",
                   borderRadius: "4px",
                   cursor: "pointer"

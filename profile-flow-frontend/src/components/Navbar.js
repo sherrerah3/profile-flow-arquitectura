@@ -68,7 +68,7 @@ const linkStyle = {
 
 const buttonStyle = {
   marginLeft: "1rem",
-  backgroundColor: "#e63946",
+  backgroundColor: "#02295e",
   color: "white",
   border: "none",
   padding: "0.4rem 0.8rem",
