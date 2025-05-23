@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import './Perfil.css'; // Asegúrate de que este path es correcto
 
 const Perfil = () => {
   const [usuario, setUsuario] = useState(null);
@@ -57,39 +58,35 @@ const Perfil = () => {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "500px", margin: "0 auto" }}>
-      <h2>Mi perfil</h2>
+    <div className="perfil-container">
+      <h2 className="perfil-title">Mi perfil</h2>
 
-      {mensaje && <p style={{ color: "green" }}>{mensaje}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {mensaje && <p className="perfil-msg">{mensaje}</p>}
+      {error && <p className="perfil-error">{error}</p>}
 
       {usuario ? (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "1rem" }}>
+        <form onSubmit={handleSubmit} className="perfil-form">
+          <div>
             <label>Nombre de usuario:</label>
             <input
               type="text"
               name="username"
               value={form.username}
               onChange={handleChange}
-              style={{ width: "100%", padding: "0.5rem" }}
             />
           </div>
 
-          <div style={{ marginBottom: "1rem" }}>
+          <div>
             <label>Correo electrónico:</label>
             <input
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
-              style={{ width: "100%", padding: "0.5rem" }}
             />
           </div>
 
-          <button type="submit" style={{ padding: "0.5rem 1rem" }}>
-            Guardar cambios
-          </button>
+          <button type="submit">Guardar cambios</button>
         </form>
       ) : (
         <p>Cargando información...</p>

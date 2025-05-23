@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./Navbar.css";
 
 const Navbar = () => {
   const [usuario, setUsuario] = useState(null);
@@ -32,47 +33,58 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={{ padding: "1rem", borderBottom: "1px solid #ccc" }}>
-      {usuario ? (
-        <>
-          <Link to="/perfil" style={linkStyle}>Inicio</Link>
+    <nav className="navbar">
+      <div className="navbar-left">
+        <Link to="/vacantes" className="navbar-logo">
+          ProfileFlow
+        </Link>
+      </div>
+      <div className="navbar-right">
+        {usuario ? (
+          <>
+            <Link to="/perfil" className="navbar-link">
+              Perfil
+            </Link>
 
-          {/* Solo los no-reclutadores ven el botón "Vacantes" */}
-          {!usuario.is_recruiter && (
-            <Link to="/vacantes" style={linkStyle}>Vacantes</Link>
-          )}
+            {!usuario.is_recruiter && (
+              <Link to="/vacantes" className="navbar-link">
+                Vacantes
+              </Link>
+            )}
 
-          {usuario.is_recruiter ? (
-            <Link to="/vacantes-publicadas" style={linkStyle}>Vacantes publicadas</Link>
-          ) : (
-            <Link to="/mis-likes" style={linkStyle}>Mis likes</Link>
-          )}
+            {usuario.is_recruiter ? (
+              <Link to="/vacantes-publicadas" className="navbar-link">
+                Vacantes publicadas
+              </Link>
+            ) : (
+              <Link to="/mis-likes" className="navbar-link">
+                Mis likes
+              </Link>
+            )}
 
-          <button onClick={handleLogout} style={buttonStyle}>Cerrar sesión</button>
-        </>
-      ) : (
-        <>
-          <Link to="/" style={linkStyle}>Login</Link>
-          <Link to="/registro" style={linkStyle}>Registro</Link>
-        </>
-      )}
+            {!usuario.is_recruiter && (
+              <Link to="/recomendaciones" className="navbar-link">
+                Recomendaciones
+              </Link>
+            )}
+
+            <button onClick={handleLogout} className="navbar-button">
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/" className="navbar-link">
+              Login
+            </Link>
+            <Link to="/registro" className="navbar-link">
+              Registro
+            </Link>
+          </>
+        )}
+      </div>
     </nav>
   );
-};
-
-const linkStyle = {
-  marginRight: "1rem",
-  textDecoration: "none",
-  color: "#333",
-};
-
-const buttonStyle = {
-  marginLeft: "1rem",
-  backgroundColor: "#02295e",
-  color: "white",
-  border: "none",
-  padding: "0.4rem 0.8rem",
-  cursor: "pointer"
 };
 
 export default Navbar;
