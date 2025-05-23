@@ -16,3 +16,16 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+    
+    @classmethod
+    def create_job(cls, title, description, company, location, recruiter, keywords):
+        # Limpieza de palabras clave: elimina espacios extra y pasa a minúsculas
+        keywords_cleaned = ','.join([kw.strip().lower() for kw in keywords.split(',') if kw.strip()])
+        return cls.objects.create(
+            title=title,
+            description=description,
+            company=company,
+            location=location,
+            recruiter=recruiter,
+            keywords=keywords_cleaned
+        )

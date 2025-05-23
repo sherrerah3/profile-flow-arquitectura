@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserSerializer, RegisterSerializer
+from .auth_strategies import UsernamePasswordAuthStrategy
 
 User = get_user_model()
 
@@ -17,14 +18,17 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
-        user = authenticate(username=username, password=password)
-
-        if user:
+        # Puedes cambiar la estrategia fácilmente aquí
+        auth_strategy = UsernamePasswordAuthStrategy()
+        try:
+            user = auth_strategy.authenticate(request.data)
             token, _ = Token.objects.get_or_create(user=user)
-            return Response({"token": token.key, "user": UserSerializer(user).data})
-        return Response({"error": "Credenciales incorrectas"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "token": token.key,
+                "user": UserSerializer(user).data
+            })
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # Vista que permite GET, PUT y PATCH para el usuario autenticado
 class CurrentUserView(generics.RetrieveUpdateAPIView):
