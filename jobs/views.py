@@ -36,8 +36,8 @@ class JobDetailView(APIView):
     def get(self, request, pk):
         job = get_object_or_404(Job, pk=pk)
 
-        # ✅ Permitir a usuarios normales ver cualquier vacante
-        # ✅ Permitir a reclutadores ver solo las suyas
+        #  Permitir a usuarios normales ver cualquier vacante
+        #  Permitir a reclutadores ver solo las suyas
         if request.user.is_recruiter and job.recruiter != request.user:
             raise PermissionDenied("Los reclutadores no pueden ver detalles de vacantes ajenas.")
 
