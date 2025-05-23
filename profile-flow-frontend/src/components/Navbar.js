@@ -48,6 +48,10 @@ const Navbar = () => {
             <Link to="/mis-likes" style={linkStyle}>Mis likes</Link>
           )}
 
+          {!usuario.is_recruiter && (
+            <Link to="/recomendaciones" style={linkStyle}>Recomendaciones</Link>
+          )}
+
           <button onClick={handleLogout} style={buttonStyle}>Cerrar sesión</button>
         </>
       ) : (
