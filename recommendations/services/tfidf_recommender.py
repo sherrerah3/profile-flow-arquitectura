@@ -1,41 +1,59 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 
 from jobs.models import Job
 from interactions.models import Interaction
+from .base_recommender import BaseRecommender
 
 
-def obtener_corpus_para_usuario(user):
-    todas_las_vacantes = Job.objects.all()
+class TFIDFRecommender(BaseRecommender):
 
-    textos_vacantes = [f"{job.title} {job.description} {job.keywords}" for job in todas_las_vacantes]
+    def obtener_corpus(self, user):
+        todas_las_vacantes = Job.objects.all()
 
-    vacantes_interes_usuario = Job.objects.filter(interactions__user=user).distinct()
+        def job_to_text(job):
+            return " ".join([
+                str(job.title),
+                str(job.description),
+                " ".join([kw.strip() for kw in str(job.keywords).split(",") if kw.strip()])
+            ])
 
-    texto_usuario = " ".join([
-        f"{job.title} {job.description} {job.keywords}"
-        for job in vacantes_interes_usuario
-    ])
+        textos_vacantes = [job_to_text(job) for job in todas_las_vacantes]
 
-    return textos_vacantes, texto_usuario, todas_las_vacantes
+        # Filtra solo vacantes con "like", no solo vistas
+        vacantes_interes_usuario = Job.objects.filter(
+            interactions__user=user,
+            interactions__interaction_type='like'
+        ).distinct()
+
+        texto_usuario = " ".join([job_to_text(job) for job in vacantes_interes_usuario])
+
+        return textos_vacantes, texto_usuario, todas_las_vacantes
+
+    def vectorizar(self, textos):
+        vectorizer = TfidfVectorizer(stop_words="english")
+        return vectorizer.fit_transform(textos)
+
+    def calcular_similitud(self, matriz):
+        return cosine_similarity(matriz[-1], matriz[:-1]).flatten()
+
+    def seleccionar(self, similitudes, objetos, top_n):
+        # Filtra vacantes ya vistas o con like
+        vacantes_vistas_ids = set(
+            Interaction.objects.filter(user=self.usuario).values_list("job_id", flat=True)
+        )
+
+        recomendaciones = [
+            obj for i, obj in sorted(
+                enumerate(objetos), key=lambda x: similitudes[x[0]], reverse=True
+            )
+            if obj.id not in vacantes_vistas_ids
+        ]
+
+        return recomendaciones[:min(len(recomendaciones), top_n)]
 
 
+# Función de ayuda externa
 def recomendar_vacantes(user, top_n=5):
-    textos_vacantes, texto_usuario, vacantes = obtener_corpus_para_usuario(user)
-
-    if not texto_usuario.strip():
-        return []  # Si no hay likes o vistas, no se puede recomendar
-
-    vectorizer = TfidfVectorizer(stop_words="english")
-    tfidf_matrix = vectorizer.fit_transform(textos_vacantes + [texto_usuario])
-
-    similitudes = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1]).flatten()
-
-    top_indices = similitudes.argsort()[-top_n:][::-1]
-
-    vacantes_list = list(vacantes)
-    vacantes_recomendadas = [vacantes_list[int(i)] for i in top_indices]
-
-
-    return vacantes_recomendadas
+    recomendador = TFIDFRecommender()
+    return recomendador.recomendar(user, top_n)
