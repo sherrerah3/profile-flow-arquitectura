@@ -19,4 +19,8 @@ class BaseRecommender:
         raise NotImplementedError("Debes implementar 'calcular_similitud'")
 
     def seleccionar(self, similitudes, objetos, top_n):
+<<<<<<< HEAD
         raise NotImplementedError("Debes implementar 'seleccionar'")
+=======
+        raise NotImplementedError("Debes implementar 'seleccionar'")
+>>>>>>> Samuel

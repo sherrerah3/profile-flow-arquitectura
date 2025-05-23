@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./Vacantes.css";
 import { useNavigate } from "react-router-dom";
 
 function Recomendaciones() {
@@ -13,7 +14,7 @@ function Recomendaciones() {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          navigate("/"); // Redirige a login si no hay token
+          navigate("/");
           return;
         }
 
@@ -30,7 +31,6 @@ function Recomendaciones() {
         setUsuarioActual(usuario);
 
         if (usuario.is_recruiter) {
-          // Si quieres puedes redirigir o mostrar mensaje
           navigate("/vacantes-publicadas");
           return;
         }
@@ -51,46 +51,49 @@ function Recomendaciones() {
   }
 
   if (recomendaciones.length === 0) {
-    return <p style={{ padding: "2rem" }}>No hay recomendaciones disponibles.</p>;
+    return (
+      <p style={{ padding: "2rem" }}>No hay recomendaciones disponibles.</p>
+    );
   }
+  console.log(recomendaciones);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1><strong>Vacantes Recomendadas</strong></h1>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+    <div className="vacantes-container">
+      <h1>
+        <strong>Vacantes Recomendadas</strong>
+      </h1>
+
+      <div className="vacantes-grid">
         {recomendaciones.map((vacante) => (
-          <li
-            key={vacante.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "6px",
-              padding: "1rem",
-              marginBottom: "1rem",
-              backgroundColor: "#f9f9f9"
-            }}
-          >
-            <h3>{vacante.title}</h3>
-            <p>{vacante.description}</p>
-            <p><em>Ubicación:</em> {vacante.location}</p>
-            <p><em>Empresa:</em> {vacante.company}</p>
-            <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
-              <button
-                onClick={() => navigate(`/vacantes/${vacante.id}`)}
-                style={{
-                  padding: "0.4rem 0.8rem",
-                  border: "1px solid #007bff",
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  borderRadius: "4px",
-                  cursor: "pointer"
-                }}
-              >
-                Ver detalle
-              </button>
+          <div className="vacante-card" key={vacante.id}>
+            <div className="vacante-img">
+              <img src="/vacante.png" alt="vacante" />
             </div>
-          </li>
+
+            <div className="vacante-content">
+              <div className="vacante-info">
+                <h3>{vacante.title}</h3>
+                <p>
+                  <strong>Descripción:</strong> {vacante.description}
+                </p>
+                <p>
+                  <strong>Ubicación:</strong> {vacante.location}
+                </p>
+                <p>
+                  <strong>Empresa:</strong> {vacante.company}
+                </p>
+
+                <button
+                  className="vacante-btn"
+                  onClick={() => navigate(`/vacantes/${vacante.id}`)}
+                >
+                  Ver detalle
+                </button>
+              </div>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

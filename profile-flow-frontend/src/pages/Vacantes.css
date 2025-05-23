@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Jockey+One&display=swap');
+
+.vacantes-container {
+  padding: 2rem;
+  font-family: 'Jockey One', sans-serif;
+}
+
+.vacantes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+  gap: 1.5rem;
+}
+
+.vacante-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; 
+  align-items: flex-start;
+  background-color: #f1f2f6;
+  border-radius: 15px;
+  padding: 1rem;
+  border: 1.8px solid #757575;
+  box-shadow: 0 0 50px rgba(32, 185, 93, 0.1);
+
+  gap: 1rem;
+}
+
+.vacante-img {
+  width: 100px;
+  height: 150px;
+  background-color: #f1f2f6;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vacante-img img {
+  width: 100%;
+  height: auto;
+}
+
+.vacante-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #000;
+}
+
+.vacante-info p {
+  margin: 0.2rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.vacante-btn {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #30B95D;
+  border: 1.9px solid #000;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.vacante-btn:hover {
+  background-color: #0f8500;
+}
+
+.vacante-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.vacante-content {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+
+.like-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  align-self: flex-start;
+  margin-left: auto; 
+}
+
+.like-icon {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s;
+}
+
+.like-btn:hover .like-icon {
+  transform: scale(1.1);
+}

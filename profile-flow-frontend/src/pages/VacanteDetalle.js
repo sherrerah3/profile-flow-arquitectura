@@ -154,21 +154,13 @@ const VacanteDetalle = () => {
           <p style={{ marginTop: "1rem", color: "gray" }}>
             Solo el reclutador que creó esta vacante puede editarla o eliminarla.
           </p>
-
-          <button
-            onClick={handleLikeToggle}
-            style={{
-              marginTop: "2rem",
-              backgroundColor: yaDioLike ? "gray" : "hotpink",
-              color: "white",
-              border: "none",
-              padding: "0.5rem 1rem",
-              borderRadius: "5px",
-              cursor: "pointer"
-            }}
-          >
-            {yaDioLike ? "Quitar like" : "Me gusta esta vacante"}
-          </button>
+          <div onClick={handleLikeToggle} style={{ cursor: "pointer", marginTop: "2rem" }}>
+            <img 
+              src={yaDioLike ? "/liked.png" : "/like.png"} 
+              alt={yaDioLike ? "Quitar like" : "Dar like"}
+              style={{ width: "32px", height: "32px" }}
+            />
+          </div>
         </>
       )}
     </div>

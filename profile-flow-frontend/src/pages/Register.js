@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // Asegurate de tener este archivo
+import "./Login.css";
 
 function Register() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function Register() {
     try {
       await axios.post("http://localhost:8000/api/users/register/", formData);
       alert("Registro exitoso. Inicia sesión.");
-      navigate("/"); // o directamente a /vacantes si querés
+      navigate("/");
     } catch (error) {
       console.error("Error al registrar:", error);
       alert("Hubo un error en el registro.");
@@ -32,7 +32,11 @@ function Register() {
 
   return (
     <div className="login-container">
-      <img src="/logo_magneto.png" alt="Logo Magneto Empleos" className="logo" />
+      <img
+        src="/logo_magneto.png"
+        alt="Logo Magneto Empleos"
+        className="logo"
+      />
       <div className="login-box">
         <h1 className="welcome-title">Crea tu cuenta!</h1>
         <form onSubmit={handleSubmit}>
@@ -43,7 +47,8 @@ function Register() {
             placeholder="Nombre"
             value={formData.username}
             onChange={handleChange}
-          /><br />
+          />
+          <br />
           <input
             className="login-input"
             type="email"
@@ -51,7 +56,8 @@ function Register() {
             placeholder="Correo"
             value={formData.email}
             onChange={handleChange}
-          /><br />
+          />
+          <br />
           <input
             className="login-input"
             type="password"
@@ -59,7 +65,8 @@ function Register() {
             placeholder="Contraseña"
             value={formData.password}
             onChange={handleChange}
-          /><br />
+          />
+          <br />
           <button className="login-button" type="submit">
             Registrarse
           </button>

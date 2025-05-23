@@ -6,4 +6,8 @@ class JobRecommendationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
+<<<<<<< HEAD
         fields = ['id', 'title', 'description', 'keywords', 'similarity']
+=======
+        fields = ['id', 'title', 'description', 'keywords', 'similarity']
+>>>>>>> Samuel
