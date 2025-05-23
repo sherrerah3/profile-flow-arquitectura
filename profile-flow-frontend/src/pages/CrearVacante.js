@@ -7,6 +7,7 @@ const CrearVacante = () => {
   const [descripcion, setDescripcion] = useState('');
   const [empresa, setEmpresa] = useState('');
   const [ubicacion, setUbicacion] = useState('');
+  const [keywords, setKeywords] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const CrearVacante = () => {
         description: descripcion,
         company: empresa,
         location: ubicacion,
+        keywords: keywords,
       }, {
         headers: {
           Authorization: `Token ${token}`,
@@ -77,6 +79,16 @@ const CrearVacante = () => {
             type="text"
             value={ubicacion}
             onChange={(e) => setUbicacion(e.target.value)}
+            required
+            style={{ width: '100%', padding: '0.5rem' }}
+          />
+        </div>
+        <div style={{ marginBottom: '1rem' }}>
+          <label>Palabras clave (separadas por comas):</label><br />
+          <input
+            type="text"
+            value={keywords}
+            onChange={(e) => setKeywords(e.target.value)}
             required
             style={{ width: '100%', padding: '0.5rem' }}
           />

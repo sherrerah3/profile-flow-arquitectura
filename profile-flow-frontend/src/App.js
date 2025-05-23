@@ -10,7 +10,8 @@ import EditarVacante from "./pages/EditarVacante";
 import Navbar from "./components/Navbar";
 import MisLikes from "./pages/MisLikes";
 import Perfil from "./pages/Perfil";
-import MisVacantesPublicadas from "./pages/MisVacantesPublicadas"; // ✅ Import nuevo
+import MisVacantesPublicadas from "./pages/MisVacantesPublicadas";
+import Recomendaciones from "./pages/Recomendaciones";
 
 const AppContent = () => {
   const location = useLocation();
@@ -24,7 +25,7 @@ const AppContent = () => {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* 🔐 Rutas protegidas */}
+        {/* Rutas protegidas */}
         <Route
           path="/vacantes"
           element={
@@ -78,6 +79,14 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <MisVacantesPublicadas />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/recomendaciones"
+          element={
+            <PrivateRoute>
+              <Recomendaciones />
             </PrivateRoute>
           }
         />
