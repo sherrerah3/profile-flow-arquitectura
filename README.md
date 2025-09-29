@@ -69,8 +69,8 @@ Este proyecto está construido con una arquitectura **Full Stack** moderna:
 
 1. **Clona el repositorio**:
 ```bash
-git clone https://github.com/TeoVH/profile-flow.git
-cd profile-flow
+git clone https://github.com/sherrerah3/profile-flow-arquitectura
+cd profile-flow-arquitectura
 ```
 
 2. **Crea un entorno virtual**:
@@ -103,7 +103,7 @@ python manage.py runserver
 
 1. **Ve al directorio del frontend**:
 ```bash
-cd frontend
+cd profile-flow-frontend
 ```
 
 2. **Instala las dependencias**:
