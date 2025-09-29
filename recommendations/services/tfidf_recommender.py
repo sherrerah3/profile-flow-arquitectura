@@ -76,8 +76,4 @@ class TFIDFRecommender(BaseRecommender):
 # Función externa
 def recomendar_vacantes(user, top_n=5):
     recomendador = TFIDFRecommender()
-<<<<<<< HEAD
     return recomendador.recomendar(user, top_n)
-=======
-    return recomendador.recomendar(user, top_n)
->>>>>>> Samuel
