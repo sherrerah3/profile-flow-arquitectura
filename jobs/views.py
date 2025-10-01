@@ -1,75 +1,61 @@
-from rest_framework.views import APIView 
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status, permissions
-from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
-from .models import Job
 from .serializers import JobSerializer
+from .repositories.django_repo import DjangoORMJobRepository
+from .services.job_service import JobService
 
-class JobListCreateView(APIView):
+
+class JobListCreateView(ListCreateAPIView):
+    serializer_class = JobSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        jobs = Job.objects.all().order_by('-created_at')
-        serializer = JobSerializer(jobs, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        service = JobService(DjangoORMJobRepository())
+        return service.list_jobs()
 
-    def post(self, request):
-        if not request.user.is_recruiter:
-            return Response(
-                {"error": "Solo los reclutadores pueden publicar vacantes."},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    def get_serializer_context(self):
+        return {"request": self.request}
 
-        serializer = JobSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(recruiter=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        if not self.request.user.is_recruiter:
+            raise PermissionDenied("Solo los reclutadores pueden publicar vacantes.")
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        service = JobService(DjangoORMJobRepository())
+        job = service.create_job(
+            title=serializer.validated_data["title"],
+            description=serializer.validated_data["description"],
+            company=self.request.data.get("company"),
+            location=self.request.data.get("location"),
+            recruiter=self.request.user,
+            keywords=self.request.data.get("keywords", [])
+        )
+        serializer.instance = job  # importante para que se devuelva correctamente
 
-class JobDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, pk):
-        job = get_object_or_404(Job, pk=pk)
+class JobDetailView(RetrieveUpdateDestroyAPIView):
+    serializer_class = JobSerializer
+    permission_classes = [IsAuthenticated]
 
-        #  Permitir a usuarios normales ver cualquier vacante
-        #  Permitir a reclutadores ver solo las suyas
-        if request.user.is_recruiter and job.recruiter != request.user:
-            raise PermissionDenied("Los reclutadores no pueden ver detalles de vacantes ajenas.")
+    def get_queryset(self):
+        service = JobService(DjangoORMJobRepository())
+        return service.list_jobs()
 
-        serializer = JobSerializer(job)
-        return Response(serializer.data)
+    def get_serializer_context(self):
+        return {"request": self.request}
 
-    def put(self, request, pk):
-        job = get_object_or_404(Job, pk=pk)
+    def perform_update(self, serializer):
+        job = self.get_object()
+        if job.recruiter != self.request.user:
+            raise PermissionDenied("No tienes permiso para editar esta vacante.")
+        serializer.save()
 
-        if job.recruiter != request.user:
-            return Response(
-                {"error": "No tienes permiso para editar esta vacante."},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    def perform_destroy(self, instance):
+        if instance.recruiter != self.request.user:
+            raise PermissionDenied("No tienes permiso para eliminar esta vacante.")
+        service = JobService(DjangoORMJobRepository())
+        service.delete_job(instance.id)
 
-        serializer = JobSerializer(job, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        job = get_object_or_404(Job, pk=pk)
-
-        if job.recruiter != request.user:
-            return Response(
-                {"error": "No tienes permiso para eliminar esta vacante."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        job.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class MisVacantesPublicadasView(ListAPIView):
     serializer_class = JobSerializer
@@ -78,5 +64,9 @@ class MisVacantesPublicadasView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_recruiter:
-            return Job.objects.filter(recruiter=user).order_by('-created_at')
-        return Job.objects.none()
+            service = JobService(DjangoORMJobRepository())
+            return service.list_jobs_by_recruiter(user)
+        return []
+
+    def get_serializer_context(self):
+        return {"request": self.request}

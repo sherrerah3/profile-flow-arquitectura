@@ -14,8 +14,8 @@ class JobRecommendationsView(APIView):
                 "title": job.title,
                 "description": job.description,
                 "similarity": job.similarity,
-                "company": job.company,
-                "location": job.location,
+                "company": job.company.name,
+                "location": job.location.name,
             }
             for job in recomendaciones
         ]
