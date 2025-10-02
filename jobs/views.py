@@ -5,6 +5,15 @@ from .serializers import JobSerializer
 from .repositories.django_repo import DjangoORMJobRepository
 from .services.job_service import JobService
 
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from .serializers import JobSerializer
+from .repositories.django_repo import DjangoORMJobRepository
+from .services.job_service import JobService
+from .models import Company, Location, Keyword
 
 class JobListCreateView(ListCreateAPIView):
     serializer_class = JobSerializer
@@ -70,3 +79,27 @@ class MisVacantesPublicadasView(ListAPIView):
 
     def get_serializer_context(self):
         return {"request": self.request}
+
+class CompanyOptionsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        companies = Company.objects.all().order_by('name')
+        data = [{'id': company.id, 'name': company.name} for company in companies]
+        return Response(data)
+
+class LocationOptionsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        locations = Location.objects.all().order_by('name')
+        data = [{'id': location.id, 'name': location.name} for location in locations]
+        return Response(data)
+
+class KeywordOptionsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        keywords = Keyword.objects.all().order_by('name')
+        data = [{'id': keyword.id, 'name': keyword.name} for keyword in keywords]
+        return Response(data)
